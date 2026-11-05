@@ -1,0 +1,40 @@
+name: Test cask
+
+# Installs the cask on a throwaway macOS runner (a clean Homebrew prefix), so nobody's own
+# Homebrew is touched. Runs on every push to Casks/ and by hand.
+on:
+  push:
+    paths: ['Casks/**', '.github/workflows/test-cask.yml']
+  pull_request:
+    paths: ['Casks/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lmux:
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tap this checkout as sooftware/tap
+        run: |
+          TAP="$(brew --repository)/Library/Taps/sooftware/homebrew-tap"
+          mkdir -p "$(dirname "$TAP")"
+          ln -s "$GITHUB_WORKSPACE" "$TAP"
+      - run: brew style --cask sooftware/tap/lmux
+      - run: brew audit --cask --strict --online sooftware/tap/lmux
+      - run: brew install --cask sooftware/tap/lmux
+      - name: Installed app and CLI
+        run: |
+          test -d /Applications/lmux.app
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/lmux.app/Contents/Info.plist
+          codesign --verify --deep --strict /Applications/lmux.app
+          spctl -a -vv /Applications/lmux.app
+          xcrun stapler validate /Applications/lmux.app
+          command -v lmux
+      - run: brew uninstall --cask --zap sooftware/tap/lmux
