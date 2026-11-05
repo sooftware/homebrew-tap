@@ -21,14 +21,15 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: '1'
     steps:
       - uses: actions/checkout@v4
-      - name: Tap this checkout as sooftware/tap
+      # Exactly what the README tells people to run, on a clean runner (taps from GitHub).
+      - run: brew install --cask sooftware/tap/lmux
+      # Then lint this checkout's cask.
+      - name: Point the tap at this checkout
         run: |
           TAP="$(brew --repository)/Library/Taps/sooftware/homebrew-tap"
-          mkdir -p "$(dirname "$TAP")"
-          ln -s "$GITHUB_WORKSPACE" "$TAP"
+          git -C "$TAP" fetch -q "$GITHUB_WORKSPACE" HEAD && git -C "$TAP" checkout -q FETCH_HEAD
       - run: brew style --cask sooftware/tap/lmux
       - run: brew audit --cask --strict --online sooftware/tap/lmux
-      - run: brew install --cask sooftware/tap/lmux
       - name: Installed app and CLI
         run: |
           test -d /Applications/lmux.app
