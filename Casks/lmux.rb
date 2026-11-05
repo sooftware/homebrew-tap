@@ -7,8 +7,8 @@ cask "lmux" do
   desc "Lightweight terminal with workspaces and Claude Code/Codex agent status"
   homepage "https://lmux.dev/"
 
-  depends_on macos: ">= :sonoma"
   depends_on arch: :arm64
+  depends_on macos: :sonoma
 
   app "lmux.app"
   # The bundled `lmux` CLI (Contents/Resources/bin/lmux, see App/scripts/bundle.sh).
