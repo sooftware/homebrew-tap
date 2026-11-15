@@ -1,6 +1,6 @@
 cask "lmux" do
   version "0.1.3"
-  sha256 "d4f1658aea748b686f8ea9d499104dbe7a2a3131f3bbb13fe1ac4fe6804d4478"
+  sha256 "b2a0e5919f802c1b35815187ce642d0997f51a6b161c87ac2d73f36ad77ba6ed"
 
   url "https://github.com/sooftware/lmux/releases/download/v#{version}/lmux-#{version}-arm64.zip"
   name "lmux"
